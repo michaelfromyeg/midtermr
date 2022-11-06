@@ -7,6 +7,7 @@ from bson import ObjectId, json_util
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pydantic import BaseModel, Field
+import boto3
 
 
 class PyObjectId(ObjectId):
@@ -54,6 +55,41 @@ app.json_encoder = CustomJSONEncoder
 load_dotenv()
 
 
+def aws_connect():
+    """
+    Return connection to S3.
+
+    TODO: return type
+    """
+    region = os.environ.get("AWS_REGION")
+    access_key_id = os.environ.get("AWS_ACCESS_KEY_ID")
+    secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
+
+    s3 = boto3.client(
+        "s3",
+        region,
+        aws_access_key_id=access_key_id,
+        aws_secret_access_key=secret_access_key,
+    )
+
+    return s3
+
+
+def generate_presigned_url(key: str, expires: int = 3600):
+    """
+    Generate presigned URL for a specific filename (key).
+    """
+    s3 = aws_connect()
+
+    response = s3.generate_presigned_url(
+        "get_object",
+        Params={"Bucket": os.environ.get("AWS_BUCKET_NAME"), "Key": key},
+        ExpiresIn=expires,
+    )
+
+    return response
+
+
 def db_connect():
     """
     Return connection to MongoDB instance.
@@ -82,15 +118,17 @@ def new_exam():
     exam = Exam(**raw_exam)
     inserted_exam = db.exams.insert_one(exam.dict())
 
-    created_student = db.exams.find_one({"_id": inserted_exam.inserted_id})
+    created_exam = db.exams.find_one({"_id": inserted_exam.inserted_id})
 
-    return jsonify(created_student)
+    return jsonify(created_exam)
 
 
 @app.route("/")
 def hello():
     db = db_connect()
+    url = generate_presigned_url("MATH100 1C3.pdf")
+
     print("exams", db.exams)
     print("find_one", db.exams.find_one())
 
-    return "Hello, World!"
+    return jsonify({"message": "Hello, World!", "url": url})
