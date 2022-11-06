@@ -1,7 +1,14 @@
 import os, requests, boto3, markdown, random
 from markdownify import markdownify
 from enum import Enum
-from flask import Flask, request, jsonify, render_template
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    render_template,
+    send_file,
+    send_from_directory,
+)
 from flask_caching import Cache
 from flask.json import JSONEncoder
 from dotenv import load_dotenv
@@ -276,7 +283,6 @@ def new_exam():
 
 
 @app.route("/exam", methods=["GET"])
-@cache.cached(timeout=50)
 def test():
     seed = request.args.get("seed")
 
@@ -286,7 +292,11 @@ def test():
 
     question_html = markdown_processor.convert(question)
 
-    return render_template("exam.html", exam=question_html)
+    html = render_template("exam.html", exam=question_html)
+
+    # return jsonify({"seed": seed, "content": html})
+
+    return send_from_directory(directory="tmp", path="math100-1c3.pdf")
 
 
 @app.route("/")

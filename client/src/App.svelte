@@ -3,6 +3,28 @@
     import Counter from "./lib/Counter.svelte";
 
     let seed = "midtermr";
+
+    async function handleClick() {
+        const serverUrl = "http://localhost:5000";
+
+        const response = await fetch(`${serverUrl}/exam?seed=${seed}`);
+        const blob = await response.blob();
+
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.download = `midtermr-${seed}.pdf`;
+        a.href = url;
+        a.target = "_self";
+
+        a.click();
+
+        setTimeout(function () {
+            // For Firefox it is necessary to delay revoking the ObjectURL
+            a.remove();
+            URL.revokeObjectURL(url);
+        }, 100);
+    }
 </script>
 
 <main>
@@ -15,7 +37,7 @@
     <div class="seed">
         <input bind:value={seed} />
         <p>Generate an exam with seed <code>{seed}</code>...</p>
-        <button>GO!</button>
+        <button on:click={handleClick}>GO!</button>
     </div>
 
     <p class="learn-more">
