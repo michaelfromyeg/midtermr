@@ -1,4 +1,5 @@
 import os, requests, boto3, markdown, random
+from pathlib import Path
 from markdownify import markdownify
 from enum import Enum
 from flask import (
@@ -7,7 +8,6 @@ from flask import (
     jsonify,
     render_template,
     send_file,
-    send_from_directory,
 )
 from flask_caching import Cache
 from flask.json import JSONEncoder
@@ -18,6 +18,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pydantic import BaseModel, Field
 from bs4 import BeautifulSoup
+from weasyprint import HTML
 
 markdown_processor = markdown.Markdown()
 
@@ -294,9 +295,13 @@ def test():
 
     html = render_template("exam.html", exam=question_html)
 
-    # return jsonify({"seed": seed, "content": html})
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, f"tmp/midtermr-{seed}.pdf")
 
-    return send_from_directory(directory="tmp", path="math100-1c3.pdf")
+    # TODO: write pre-processor to convert math sections into images
+    HTML(string=html).write_pdf(filename)
+
+    return send_file(filename)
 
 
 @app.route("/")
