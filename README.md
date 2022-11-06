@@ -14,6 +14,11 @@ This project aims to create supplementary practice material for introductory MAT
 
 TODO
 
+## TODOs
+
+- [ ] Write the `README.md`
+- [ ] Fix `\ds\diff` LaTeX problem
+
 ## Contributing
 
 TODO
