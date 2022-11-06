@@ -295,13 +295,15 @@ def test():
 
     html = render_template("exam.html", exam=question_html)
 
-    dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, f"tmp/midtermr-{seed}.pdf")
+    # dirname = os.path.dirname(__file__)
+    # filename = os.path.join(dirname, f"tmp/midtermr-{seed}.pdf")
 
-    # TODO: write pre-processor to convert math sections into images
-    HTML(string=html).write_pdf(filename)
+    # # TODO: write pre-processor to convert math sections into images
+    # HTML(string=html).write_pdf(filename)
 
-    return send_file(filename)
+    # return send_file(filename)
+
+    return html
 
 
 @app.route("/")

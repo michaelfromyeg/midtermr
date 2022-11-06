@@ -39,9 +39,28 @@
             async
             src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
         ></script>
+        <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+        <script>
+            const { jsPDF } = window.jspdf;
+
+            function downloadPdf() {
+                const pdf = new jsPDF("p", "pt", "letter");
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const seed = urlParams.get("seed");
+
+                pdf.html(document.body, {
+                    callback: function (doc) {
+                        doc.save(`midtermr-${seed}.pdf`);
+                    },
+                });
+            }
+        </script>
     </head>
     <body>
         <h1>Exam</h1>
+        <button id="export" onclick="downloadPdf()">Export as PDF</button>
         {{exam|safe}}
     </body>
 </html>

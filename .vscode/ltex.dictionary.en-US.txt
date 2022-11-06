@@ -7,3 +7,17 @@ crossorigin
 Roboto
 img
 displaymath
+javascript
+const
+jsPDF
+onclick
+downloadPdf
+addHTML
+midtermr-$
+urlParams
+URLSearchParams
+setAttribute
+createElement
+appendChild
+datauristring
+getElementById
