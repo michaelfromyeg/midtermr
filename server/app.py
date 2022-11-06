@@ -1,7 +1,8 @@
-import os, requests, boto3, markdown
+import os, requests, boto3, markdown, random
 from markdownify import markdownify
 from enum import Enum
 from flask import Flask, request, jsonify, render_template
+from flask_caching import Cache
 from flask.json import JSONEncoder
 from dotenv import load_dotenv
 from datetime import datetime
@@ -84,6 +85,15 @@ CLP_SECTION_REFERENCE = {
     },
 }
 
+EXAM_TEMPLATE = {
+    1.6: {
+        1: 1,
+        2: 2,
+        3: 3,
+    },
+    2.7: {1: 1, 2: 2, 3: 3},
+}
+
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -126,6 +136,14 @@ class Exam(BaseModel):
 
 app = Flask(__name__)
 app.json_encoder = CustomJSONEncoder
+
+config = {
+    "DEBUG": True,  # some Flask specific configs
+    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 300,
+}
+app.config.from_mapping(config)
+cache = Cache(app)
 
 load_dotenv()
 
@@ -183,10 +201,20 @@ def db_connect():
     return client[name]
 
 
-def get_question(section: TextbookSection, difficulty: ExerciseDifficulty) -> str:
+def get_questions(
+    section: TextbookSection, difficulty: ExerciseDifficulty, n: int, seed: str
+) -> str:
     """
     Pull a question from the CLP.
+
+    TODO: get rid of Markdown intermediate step; go straight to HTML
+
+    :param section: a section of the CLP textbook
+    :param difficulty: the level of difficulty of the questions to pull
+    :param n: the number of questions to select in the section
     """
+    random.seed(seed)
+
     url = clp_exercises_url(
         exercise_id=CLP_SECTION_REFERENCE[section.value]["exercise_id"]
     )
@@ -194,32 +222,42 @@ def get_question(section: TextbookSection, difficulty: ExerciseDifficulty) -> st
     r = requests.get(url)
 
     soup = BeautifulSoup(r.content, "html.parser")
-    exercise = soup.find("article", class_="exercise-like")
+    exercise_groups = soup.find_all("div", class_="exercisegroup")
 
-    question = exercise.find("p")
-    math = exercise.find_all("div", class_="displaymath")
-    images = exercise.find_all("img")
+    print(difficulty.value - 1, exercise_groups)
 
-    print(exercise.prettify())
-    print("\n\n")
+    exercise_group = exercise_groups[difficulty.value - 1]
 
-    markdown = markdownify(question.text, heading_style="ATX")
+    exercises_wrapper = exercise_group.find("div", class_="exercisegroup-exercises")
+    exercises = exercises_wrapper.find_all("article", class_="exercise-like")
 
-    print(math)
-    for i, m in enumerate(math):
-        print(i, m)
-        if m is not None:
-            m_text = str(m.text).replace("\\amp", "\\newline")
-            markdown += f'\n<div class="displaymath">{m_text}</div>\n'
+    exercises_sample = random.sample(list(exercises), n)
 
-    for i, image in enumerate(images):
-        print(i, image)
-        image_url = clp_images_url(relative_path=image["src"])
-        markdown += f'\n![image-{i}]({image_url} "image-{i}")\n'
+    full_markdown = ""
 
-    print(markdown)
+    for i, exercise in enumerate(exercises_sample):
 
-    return markdown
+        questions = exercise.find_all("p")
+        maths = exercise.find_all("div", class_="displaymath")
+        images = exercise.find_all("img")
+
+        markdown = f"## Exercise {i + 1}\n"
+
+        for i, question in enumerate(questions):
+            question_md = markdownify(question.text, heading_style="ATX")
+            markdown += f'\n<div class="displaymath">{question_md}</div>'
+
+        for i, math in enumerate(maths):
+            math_md = str(math.text).replace("\\amp", "\\newline")
+            markdown += f'\n<div class="displaymath">{math_md}</div>\n'
+
+        for i, image in enumerate(images):
+            image_url = clp_images_url(relative_path=image["src"])
+            markdown += f'\n<img style="display: block; margin: auto; margin-top: 2rem;" src={image_url} alt="image-{i}" />\n'
+
+        full_markdown += f"{markdown}\n\n"
+
+    return full_markdown
 
 
 @app.route("/exams", methods=["POST"])
@@ -238,9 +276,12 @@ def new_exam():
 
 
 @app.route("/exam", methods=["GET"])
+@cache.cached(timeout=50)
 def test():
-    question = get_question(
-        TextbookSection.DERIVATIVES_OF_EXPONENTIALS, ExerciseDifficulty.STAGE_1
+    seed = request.args.get("seed")
+
+    question = get_questions(
+        TextbookSection.DERIVATIVES_OF_EXPONENTIALS, ExerciseDifficulty.STAGE_1, 2, seed
     )
 
     question_html = markdown_processor.convert(question)

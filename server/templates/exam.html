@@ -5,6 +5,34 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge" />
         <meta name="viewport" content="width=device-width" />
         <title>Exam</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            html {
+                max-width: 70ch;
+                padding: 3em 1em;
+                margin: auto;
+                line-height: 1.5;
+                font-size: 1.1em;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                font-family: "Roboto", sans-serif;
+            }
+
+            .displaymath {
+                font-family: "Times New Roman", serif;
+            }
+        </style>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
         <script
             id="MathJax-script"
@@ -13,10 +41,6 @@
         ></script>
     </head>
     <body>
-        <p>
-            When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\)
-            and they are \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
-        </p>
         <h1>Exam</h1>
         {{exam|safe}}
     </body>
