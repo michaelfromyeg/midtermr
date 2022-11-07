@@ -127,8 +127,9 @@ class CustomJSONEncoder(JSONEncoder):
 class Exam(BaseModel):
     _id: PyObjectId = Field(default_factory=PyObjectId)
     name: str = Field("My Exam")
+    seed: str | None = Field(None)
+    content: str = Field("")
     date_created: datetime | None = Field(None)
-    filename: str | None = Field(None)
 
     class Config:
         allow_population_by_field_name = True
@@ -232,8 +233,6 @@ def get_questions(
     soup = BeautifulSoup(r.content, "html.parser")
     exercise_groups = soup.find_all("div", class_="exercisegroup")
 
-    print(difficulty.value - 1, exercise_groups)
-
     exercise_group = exercise_groups[difficulty.value - 1]
 
     exercises_wrapper = exercise_group.find("div", class_="exercisegroup-exercises")
@@ -241,7 +240,7 @@ def get_questions(
 
     exercises_sample = random.sample(list(exercises), n)
 
-    full_markdown = ""
+    full_html = ""
 
     for i, exercise in enumerate(exercises_sample):
 
@@ -249,31 +248,82 @@ def get_questions(
         maths = exercise.find_all("div", class_="displaymath")
         images = exercise.find_all("img")
 
-        markdown = f"## Exercise {i + 1}\n"
+        html = f"<h2>Exercise {i + 1}</h2>"
 
         for i, question in enumerate(questions):
             question_md = markdownify(question.text, heading_style="ATX")
-            markdown += f'\n<div class="displaymath">{question_md}</div>'
+            html += f"\n<p>{question_md}</p>\n"
 
         for i, math in enumerate(maths):
             math_md = str(math.text).replace("\\amp", "\\newline")
-            markdown += f'\n<div class="displaymath">{math_md}</div>\n'
+            html += f"<p>{math_md}</p>\n"
 
         for i, image in enumerate(images):
             image_url = clp_images_url(relative_path=image["src"])
-            markdown += f'\n<img style="display: block; margin: auto; margin-top: 2rem;" src={image_url} alt="image-{i}" />\n'
+            html += f'<img style="display: block; margin: auto; margin-top: 2rem;" src={image_url} alt="image-{i}" />\n'
 
-        full_markdown += f"{markdown}\n\n"
+        full_html += html
 
-    return full_markdown
+    return full_html
+
+
+@app.route("/exam/<filename>", methods=["GET"])
+def get_exam_by_filename(filename: str):
+    """
+    Get an exam's PDF file.
+
+    TODO: replace this with S3
+    """
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, f"tmp/{filename}")
+
+    return send_file(filename)
+
+
+@app.route("/exams/<name>", methods=["GET"])
+def get_exam_by_name(name: str):
+    db = db_connect()
+
+    exam = db.exams.find_one({"name": name})
+
+    return jsonify(exam)
+
+
+@app.route("/exams", methods=["GET"])
+def get_exams():
+    db = db_connect()
+
+    exams = list(db.exams.find())
+
+    return jsonify({"exams": exams})
 
 
 @app.route("/exams", methods=["POST"])
 def new_exam():
+    """
+    Create a new exam.
+    """
+
     db = db_connect()
+
+    seed = request.args.get("seed")
 
     raw_exam = request.get_json()
     raw_exam["date_created"] = datetime.utcnow()
+
+    question_html = get_questions(
+        TextbookSection.DERIVATIVES_OF_EXPONENTIALS, ExerciseDifficulty.STAGE_1, 2, seed
+    )
+
+    raw_exam["content"] = question_html
+
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, f"tmp/midtermr-{seed}.pdf")
+
+    if not os.path.exists(filename):
+        html = render_template("exam.html", exam=question_html)
+        # TODO: write pre-processor to convert math sections into images
+        HTML(string=html).write_pdf(filename)
 
     exam = Exam(**raw_exam)
     inserted_exam = db.exams.insert_one(exam.dict())
@@ -281,29 +331,6 @@ def new_exam():
     created_exam = db.exams.find_one({"_id": inserted_exam.inserted_id})
 
     return jsonify(created_exam)
-
-
-@app.route("/exam", methods=["GET"])
-def test():
-    seed = request.args.get("seed")
-
-    question = get_questions(
-        TextbookSection.DERIVATIVES_OF_EXPONENTIALS, ExerciseDifficulty.STAGE_1, 2, seed
-    )
-
-    question_html = markdown_processor.convert(question)
-
-    html = render_template("exam.html", exam=question_html)
-
-    # dirname = os.path.dirname(__file__)
-    # filename = os.path.join(dirname, f"tmp/midtermr-{seed}.pdf")
-
-    # # TODO: write pre-processor to convert math sections into images
-    # HTML(string=html).write_pdf(filename)
-
-    # return send_file(filename)
-
-    return html
 
 
 @app.route("/")
