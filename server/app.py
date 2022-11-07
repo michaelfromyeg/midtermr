@@ -9,6 +9,7 @@ from flask import (
     render_template,
     send_file,
 )
+from flask_cors import CORS
 from flask_caching import Cache
 from flask.json import JSONEncoder
 from dotenv import load_dotenv
@@ -19,6 +20,7 @@ from pymongo.server_api import ServerApi
 from pydantic import BaseModel, Field
 from bs4 import BeautifulSoup
 from weasyprint import HTML
+from flask_ngrok import run_with_ngrok
 
 markdown_processor = markdown.Markdown()
 
@@ -154,6 +156,9 @@ class Exam(BaseModel):
 
 app = Flask(__name__)
 app.json_encoder = CustomJSONEncoder
+CORS(app)  # This will enable CORS for all routes
+run_with_ngrok(app)
+
 
 config = {
     "DEBUG": True,  # some Flask specific configs
