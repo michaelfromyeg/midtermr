@@ -9,7 +9,7 @@
     let exams = [];
     let length = 1;
 
-    const serverUrl = "http://localhost:5000";
+    const serverUrl = "https://adff-206-87-196-94.ngrok.io";
 
     async function handleClick() {
         const response = await fetch(`${serverUrl}/exams?seed=${seed}`, {

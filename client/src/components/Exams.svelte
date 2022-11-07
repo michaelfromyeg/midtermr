@@ -7,7 +7,7 @@
         downloadExam(`midtermr-${exam.seed}.pdf`);
     }
 
-    const serverUrl = "http://localhost:5000";
+    const serverUrl = "https://adff-206-87-196-94.ngrok.io";
 
     async function downloadExam(filename) {
         const response = await fetch(`${serverUrl}/exam/${filename}`);

@@ -9,8 +9,12 @@
 
 <Router {url}>
     <div>
-        <Route path="/exams/:examId" let:params={examId} component={Exam} />
-        <Route path="/about" component={About} />
-        <Route path="/" component={Home} />
+        <Route
+            path="/midtermr/exams/:examId"
+            let:params={examId}
+            component={Exam}
+        />
+        <Route path="/midtermr/about" component={About} />
+        <Route path="/midtermr" component={Home} />
     </div>
 </Router>
