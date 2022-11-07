@@ -23,30 +23,9 @@
             }),
         });
 
-        const body = await response.json();
+        await response.json();
 
-        console.log({ body });
-    }
-
-    async function downloadExam(filename) {
-        const response = await fetch(`${serverUrl}/exam/${filename}`);
-
-        const blob = await response.blob();
-
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.download = `midtermr-${seed}.pdf`;
-        a.href = url;
-        a.target = "_self";
-
-        a.click();
-
-        setTimeout(function () {
-            // For Firefox it is necessary to delay revoking the ObjectURL
-            a.remove();
-            URL.revokeObjectURL(url);
-        }, 100);
+        window.location.replace(`/exams/${examName}`);
     }
 
     onMount(async () => {
