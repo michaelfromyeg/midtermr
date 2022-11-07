@@ -93,13 +93,21 @@ CLP_SECTION_REFERENCE = {
     },
 }
 
-EXAM_TEMPLATE = {
+LONG_EXAM_TEMPLATE = {
     1.6: {
-        1: 1,
+        1: 3,
         2: 2,
-        3: 3,
+        3: 1,
     },
-    2.7: {1: 1, 2: 2, 3: 3},
+    2.7: {1: 3, 2: 2, 3: 1},
+}
+
+SHORT_EXAM_TEMPLATE = {
+    1.6: {
+        1: 2,
+        2: 1,
+    },
+    2.7: {1: 2, 2: 1},
 }
 
 
@@ -128,6 +136,7 @@ class Exam(BaseModel):
     _id: PyObjectId = Field(default_factory=PyObjectId)
     name: str = Field("My Exam")
     seed: str | None = Field(None)
+    length: int = Field(1)
     content: str = Field("")
     date_created: datetime | None = Field(None)
 
@@ -248,7 +257,7 @@ def get_questions(
         maths = exercise.find_all("div", class_="displaymath")
         images = exercise.find_all("img")
 
-        html = f"<h2>Exercise {i + 1}</h2>"
+        html = f"<h4>Exercise {i + 1}</h4>"
 
         for i, question in enumerate(questions):
             question_md = markdownify(question.text, heading_style="ATX")
@@ -311,11 +320,19 @@ def new_exam():
     raw_exam = request.get_json()
     raw_exam["date_created"] = datetime.utcnow()
 
-    question_html = get_questions(
-        TextbookSection.DERIVATIVES_OF_EXPONENTIALS, ExerciseDifficulty.STAGE_1, 2, seed
-    )
+    template = LONG_EXAM_TEMPLATE if raw_exam["length"] == 1 else SHORT_EXAM_TEMPLATE
 
-    raw_exam["content"] = question_html
+    full_html = ""
+    for section, value in template.items():
+        full_html += f"<h2>Section {section}</h2>"
+        for difficulty, n in value.items():
+            full_html += f"<h3>Difficulty {difficulty}</h3>"
+            question_html = get_questions(
+                TextbookSection(section), ExerciseDifficulty(difficulty), n, seed
+            )
+            full_html += question_html
+
+    raw_exam["content"] = full_html
 
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, f"tmp/midtermr-{seed}.pdf")

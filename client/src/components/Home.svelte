@@ -7,6 +7,7 @@
     let examName = "my-cool-exam";
     let seed = "midtermr";
     let exams = [];
+    let length = 1;
 
     const serverUrl = "http://localhost:5000";
 
@@ -20,6 +21,7 @@
             body: JSON.stringify({
                 name: examName,
                 seed,
+                length,
             }),
         });
 
@@ -37,18 +39,28 @@
 </script>
 
 <main>
-    <div>
+    <div style="text-align: center;">
         <img src={pencilLogo} class="logo pencil" alt="Pencil Logo" />
     </div>
 
-    <h1>midtermr</h1>
+    <h1 style="text-align: center;">midtermr</h1>
 
-    <div class="seed">
+    <div class="seed" style="text-align: center;">
         <label for="examName">Name: </label>
         <input id="examName" bind:value={examName} />
         <br />
         <label for="seed">Seed: </label>
         <input id="seed" bind:value={seed} />
+        <br />
+        <label>
+            <input type="radio" bind:group={length} name="length" value={1} />
+            long exam
+        </label>
+        <label>
+            <input type="radio" bind:group={length} name="length" value={2} />
+            short exam
+        </label>
+        <br />
         <p>
             Generate exam <code>{examName}</code> with seed
             <code>{seed}</code>...
@@ -59,7 +71,7 @@
     <br />
     <hr />
 
-    <h2>Past Exams</h2>
+    <h2 style="text-align: center;">Past Exams</h2>
 
     <div>
         <Exams {exams} />

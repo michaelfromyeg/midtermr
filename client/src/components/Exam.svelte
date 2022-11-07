@@ -55,11 +55,11 @@
 </script>
 
 <main>
-    <div>
+    <div style="margin: 0 auto; text-align: center;">
         <img src={pencilLogo} class="logo pencil" alt="Pencil Logo" />
     </div>
 
-    <h1>Exam: {examId}</h1>
+    <h1 style="text-align: center;">Exam: {examId}</h1>
 
     <div id="syncTypeset" />
 </main>
