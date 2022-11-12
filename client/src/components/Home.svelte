@@ -1,15 +1,13 @@
 <script>
     import { onMount } from "svelte";
-
-    import pencilLogo from "../assets/pencil.png";
+    import { serverUrl } from "../../constants";
     import Exams from "./Exams.svelte";
+    import pencilLogo from "../assets/pencil.png";
 
     let examName = "my-cool-exam";
     let seed = "midtermr";
     let exams = [];
     let length = 1;
-
-    const serverUrl = "https://adff-206-87-196-94.ngrok.io";
 
     async function handleClick() {
         const response = await fetch(`${serverUrl}/exams?seed=${seed}`, {
@@ -31,16 +29,20 @@
     }
 
     onMount(async () => {
-        const response = await fetch(`${serverUrl}/exams`);
-        const body = await response.json();
+        try {
+            const response = await fetch(`${serverUrl}/exams`);
+            const body = await response.json();
 
-        exams = body.exams;
+            exams = body.exams;
+        } catch (error) {
+            console.error(error);
+        }
     });
 </script>
 
 <main>
     <div style="text-align: center;">
-        <img src={pencilLogo} class="logo pencil" alt="Pencil Logo" />
+        <img src={pencilLogo} class="logo" alt="Pencil Logo" />
     </div>
 
     <h1 style="text-align: center;">midtermr</h1>
@@ -62,10 +64,10 @@
         </label>
         <br />
         <p>
-            Generate exam <code>{examName}</code> with seed
-            <code>{seed}</code>...
+            Generate exam <code class="variable">{examName}</code> with seed
+            <code class="variable">{seed}</code>...
         </p>
-        <button on:click={handleClick}>GO!</button>
+        <button class="go" on:click={handleClick}>GO!</button>
     </div>
 
     <br />
@@ -73,9 +75,7 @@
 
     <h2 style="text-align: center;">Past Exams</h2>
 
-    <div>
-        <Exams {exams} />
-    </div>
+    <Exams {exams} />
 
     <p class="learn-more">
         Click <a
@@ -94,22 +94,19 @@
     }
 
     .logo:hover {
-        filter: drop-shadow(0 0 2em #646cffaa);
-    }
-
-    .logo.pencil:hover {
         filter: drop-shadow(0 0 2em #ff3e00aa);
     }
 
     .learn-more {
+        text-align: center;
         color: #888;
     }
 
-    code {
+    code.variable {
         background-color: yellow;
     }
 
-    button {
+    button.go {
         background-color: limegreen;
         color: white;
     }

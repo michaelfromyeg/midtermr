@@ -1,3 +1,6 @@
 {
-    "python.analysis.extraPaths": ["server"]
+    "python.analysis.extraPaths": ["server"],
+    "files.associations": {
+        "CNAME": "plaintext"
+    }
 }

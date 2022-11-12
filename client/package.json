@@ -1,5 +1,6 @@
 {
     "name": "client",
+    "homepage": "midtermr.michaeldemar.co",
     "private": true,
     "version": "0.0.0",
     "type": "module",

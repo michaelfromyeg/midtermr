@@ -1,13 +1,11 @@
 <script>
-    export let examId;
-
     import { onMount } from "svelte";
-
+    import { serverUrl } from "../../constants";
     import pencilLogo from "../assets/pencil.png";
 
-    let content = "";
+    export let examId;
 
-    const serverUrl = "https://adff-206-87-196-94.ngrok.io";
+    let content = "";
 
     // TODO: clean-up
     onMount(() => {

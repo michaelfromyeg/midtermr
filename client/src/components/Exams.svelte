@@ -1,4 +1,7 @@
 <script>
+    import { serverUrl } from "../../constants";
+    import Icon from "./Icon.svelte";
+
     export let exams;
 
     function handleClick(e, exam) {
@@ -6,8 +9,6 @@
 
         downloadExam(`midtermr-${exam.seed}.pdf`);
     }
-
-    const serverUrl = "https://adff-206-87-196-94.ngrok.io";
 
     async function downloadExam(filename) {
         const response = await fetch(`${serverUrl}/exam/${filename}`);
@@ -36,9 +37,9 @@
         {#each exams as exam}
             <li>
                 <a href="/exams/{exam.name}">{exam.name}</a>
-                <button on:click={(e) => handleClick(e, exam)}
-                    >Download PDF</button
-                >
+                <button on:click={(e) => handleClick(e, exam)}>
+                    <Icon name="trash" />
+                </button>
             </li>
         {/each}
     </ul>
