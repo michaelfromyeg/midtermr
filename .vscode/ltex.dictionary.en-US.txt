@@ -21,3 +21,7 @@ createElement
 appendChild
 datauristring
 getElementById
+~and~
+replaceState
+pathname
+url

@@ -4,10 +4,18 @@
 
     export let exams;
 
-    function handleClick(e, exam) {
+    function handleView(e) {
+        e.preventDefault();
+    }
+
+    function handleDownload(e, exam) {
         e.preventDefault();
 
         downloadExam(`midtermr-${exam.seed}.pdf`);
+    }
+
+    function handleDelete(e) {
+        e.preventDefault();
     }
 
     async function downloadExam(filename) {
@@ -30,17 +38,43 @@
             URL.revokeObjectURL(url);
         }, 100);
     }
+
+    function renderDate(dateObject) {
+        return new Date(dateObject["$date"]).toLocaleDateString();
+    }
 </script>
 
 <section>
-    <ul>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Seed</th>
+            <th>Date Created</th>
+            <th>Actions</th>
+        </tr>
         {#each exams as exam}
-            <li>
-                <a href="/exams/{exam.name}">{exam.name}</a>
-                <button on:click={(e) => handleClick(e, exam)}>
-                    <Icon name="trash" />
-                </button>
-            </li>
+            <tr>
+                <td>{exam.name}</td>
+                <td>{exam.seed}</td>
+                <td>{renderDate(exam.date_created)}</td>
+                <td>
+                    <button on:click={(e) => handleView(e)}>View</button>
+                    <button on:click={(e) => handleDownload(e, exam)}
+                        >Download</button
+                    >
+                    <button on:click={(e) => handleDelete(e)}>Delete</button>
+                </td>
+            </tr>
         {/each}
-    </ul>
+    </table>
 </section>
+
+<style>
+    td {
+        padding: 0 30px;
+    }
+
+    th {
+        text-align: center;
+    }
+</style>

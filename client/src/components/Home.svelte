@@ -2,11 +2,10 @@
     import { onMount } from "svelte";
     import { serverUrl } from "../../constants";
     import Exams from "./Exams.svelte";
-    import pencilLogo from "../assets/pencil.png";
 
     let examName = "my-cool-exam";
     let seed = "midtermr";
-    let exams = [];
+    let exams = undefined;
     let length = 1;
 
     async function handleClick() {
@@ -40,13 +39,11 @@
     });
 </script>
 
-<main>
-    <div style="text-align: center;">
-        <img src={pencilLogo} class="logo" alt="Pencil Logo" />
-    </div>
+<svelte:head>
+    <title>midtermr — home</title>
+</svelte:head>
 
-    <h1 style="text-align: center;">midtermr</h1>
-
+<div>
     <div class="seed" style="text-align: center;">
         <label for="examName">Name: </label>
         <input id="examName" bind:value={examName} />
@@ -75,16 +72,12 @@
 
     <h2 style="text-align: center;">Past Exams</h2>
 
-    <Exams {exams} />
-
-    <p class="learn-more">
-        Click <a
-            href="https://github.com/michaelfromyeg/midtermr"
-            target="_blank"
-            rel="noreferrer">here</a
-        > to learn more about midtermr.
-    </p>
-</main>
+    {#if exams}
+        <Exams {exams} />
+    {:else}
+        <p style="text-align: center;">Loading exams...</p>
+    {/if}
+</div>
 
 <style>
     .logo {
@@ -95,11 +88,6 @@
 
     .logo:hover {
         filter: drop-shadow(0 0 2em #ff3e00aa);
-    }
-
-    .learn-more {
-        text-align: center;
-        color: #888;
     }
 
     code.variable {
