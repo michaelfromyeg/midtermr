@@ -44,8 +44,8 @@
     }
 </script>
 
-<section>
-    <table>
+<div class="exams">
+    <table class="exams-table">
         <tr>
             <th>Name</th>
             <th>Seed</th>
@@ -67,9 +67,14 @@
             </tr>
         {/each}
     </table>
-</section>
+</div>
 
 <style>
+    .exams,
+    .exams-table {
+        margin: 0 auto;
+    }
+
     td {
         padding: 0 30px;
     }

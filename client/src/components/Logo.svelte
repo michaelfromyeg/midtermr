@@ -4,7 +4,7 @@
 
 <div class="logo">
     <img class="logo-icon" src={pencilLogo} alt="midtermr logo (a pencil)" />
-    <h3 class="logo-text">midtermr</h3>
+    <h1 class="logo-text">midtermr</h1>
 </div>
 
 <style>
@@ -14,11 +14,16 @@
     }
 
     .logo-icon {
+        position: relative;
+        top: 4px;
+
         display: inline-block;
-        width: 10px;
+        width: 24px;
+        margin-right: 10px;
     }
 
     .logo-text {
         display: inline-block;
+        margin: 0;
     }
 </style>
