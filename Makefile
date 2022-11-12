@@ -21,7 +21,7 @@ docker-run:
 
 client-deploy:
 	pushd client && \
-	npm run build && npm run deploy && \
+	npm run deploy && \
 	popd
 
 server-deploy:
