@@ -8,7 +8,7 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "predeploy": "npm run build && cp 404.html build",
+        "predeploy": "npm run build && cp 404.html dist",
         "deploy": "npx gh-pages -d dist"
     },
     "devDependencies": {
