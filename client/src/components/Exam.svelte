@@ -52,7 +52,7 @@
 </script>
 
 <svelte:head>
-    <title>midtermr — exam</title>
+    <title>midtermr — {examId}</title>
 </svelte:head>
 
 <div class="exam">

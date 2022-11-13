@@ -3,6 +3,7 @@
     export let width = "1rem";
     export let height = "1rem";
     export let focusable = "false";
+
     let icons = [
         {
             box: 24,
@@ -36,6 +37,7 @@
 </g>`,
         },
     ];
+
     let displayIcon = icons.find((e) => e.name === name);
 </script>
 
