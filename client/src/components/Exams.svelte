@@ -1,11 +1,13 @@
 <script>
     import { serverUrl } from "../../constants";
-    import Icon from "./Icon.svelte";
+    import { navigate } from "svelte-routing";
 
     export let exams;
 
-    function handleView(e) {
+    function handleView(e, exam) {
         e.preventDefault();
+
+        navigate(`/exams/${exam.name}`, { replace: true });
     }
 
     function handleDownload(e, exam) {
@@ -16,6 +18,8 @@
 
     function handleDelete(e) {
         e.preventDefault();
+
+        alert("You can't delete exams yet, but this feature is coming!");
     }
 
     async function downloadExam(filename) {
@@ -58,7 +62,7 @@
                 <td>{exam.seed}</td>
                 <td>{renderDate(exam.date_created)}</td>
                 <td>
-                    <button on:click={(e) => handleView(e)}>View</button>
+                    <button on:click={(e) => handleView(e, exam)}>View</button>
                     <button on:click={(e) => handleDownload(e, exam)}
                         >Download</button
                     >

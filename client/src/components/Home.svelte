@@ -1,5 +1,7 @@
 <script>
     import { onMount } from "svelte";
+    import { navigate } from "svelte-routing";
+
     import { serverUrl } from "../../constants";
     import Exams from "./Exams.svelte";
 
@@ -8,23 +10,27 @@
     let exams = undefined;
     let length = 1;
 
-    async function handleClick() {
-        const response = await fetch(`${serverUrl}/exams?seed=${seed}`, {
-            method: "post",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                name: examName,
-                seed,
-                length,
-            }),
-        });
+    async function handleCreateExam() {
+        try {
+            const response = await fetch(`${serverUrl}/exams?seed=${seed}`, {
+                method: "post",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: examName,
+                    seed,
+                    length,
+                }),
+            });
 
-        await response.json();
+            await response.json();
 
-        window.location.replace(`/exams/${examName}`);
+            navigate(`/exams/${examName}`, { replace: true });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     onMount(async () => {
@@ -64,7 +70,7 @@
             Generate exam <code class="variable">{examName}</code> with seed
             <code class="variable">{seed}</code>...
         </p>
-        <button class="go" on:click={handleClick}>GO!</button>
+        <button class="go" on:click={handleCreateExam}>GO!</button>
     </div>
 
     <br />
@@ -80,16 +86,6 @@
 </div>
 
 <style>
-    .logo {
-        height: 6em;
-        padding: 1.5em;
-        will-change: filter;
-    }
-
-    .logo:hover {
-        filter: drop-shadow(0 0 2em #ff3e00aa);
-    }
-
     code.variable {
         background-color: yellow;
     }

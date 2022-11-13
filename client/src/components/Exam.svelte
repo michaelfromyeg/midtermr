@@ -1,14 +1,14 @@
 <script>
     import { onMount } from "svelte";
     import { serverUrl } from "../../constants";
-    import pencilLogo from "../assets/pencil.png";
 
     export let examId;
 
     let content = "";
+    let typsetting = true;
 
-    // TODO: clean-up
-    onMount(() => {
+    onMount(async () => {
+        // Set MathJax settings on global window object
         // @ts-ignore
         window.MathJax = {
             tex: {
@@ -22,33 +22,32 @@
             },
         };
 
-        var script2 = document.createElement("script");
-        script2.src = "https://polyfill.io/v3/polyfill.min.js?features=es6";
-        document.head.appendChild(script2);
+        // Re-add scripts to head (...no idea why this works or is needed)
+        [
+            "https://polyfill.io/v3/polyfill.min.js?features=es6",
+            "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js",
+        ].forEach((script) => {
+            const elt = document.createElement("script");
+            elt.src = script;
+            document.head.appendChild(elt);
+        });
 
-        var script = document.createElement("script");
-        script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
-        document.head.appendChild(script);
-    });
+        try {
+            const response = await fetch(`${serverUrl}/exams/${examId}`);
+            const body = await response.json();
 
-    // TODO: clean-up
-    onMount(async () => {
-        const response = await fetch(`${serverUrl}/exams/${examId}`);
-        const body = await response.json();
+            content = body.content;
 
-        content = body.content;
+            // (I also have no idea why this needs to be wrapped in a setTimeout to work...)
+            setTimeout(function () {
+                // @ts-ignore
+                MathJax.typeset();
 
-        const exam = document.createElement("span");
-        exam.textContent = content;
-
-        const syncTypeset = document.querySelector("#syncTypeset");
-
-        syncTypeset.innerHTML = content;
-
-        setTimeout(function () {
-            // @ts-ignore
-            MathJax.typeset();
-        }, 3000);
+                typsetting = false;
+            }, 0);
+        } catch (error) {
+            console.error(error);
+        }
     });
 </script>
 
@@ -56,28 +55,48 @@
     <title>midtermr — exam</title>
 </svelte:head>
 
-<div>
-    <div style="margin: 0 auto; text-align: center;">
-        <img src={pencilLogo} class="logo pencil" alt="Pencil Logo" />
-    </div>
+<div class="exam">
+    <h1 class="exam-title">Exam: {examId}</h1>
+    {#if typsetting}
+        <p class="exam-message">
+            Processing exam <span class="latex"
+                >L<sup>a</sup>T<sub>e</sub>X</span
+            >...
+        </p>
+    {/if}
 
-    <h1 style="text-align: center;">Exam: {examId}</h1>
-
-    <div id="syncTypeset" />
+    <!-- Hide exam content while still being typeset, but still render on page to allow MathJax to work! -->
+    <span style={typsetting ? "display: none" : ""}>
+        {@html content}
+    </span>
 </div>
 
 <style>
-    .logo {
-        height: 6em;
-        padding: 1.5em;
-        will-change: filter;
+    .exam-title,
+    .exam-message {
+        text-align: center;
     }
 
-    .logo:hover {
-        filter: drop-shadow(0 0 2em #646cffaa);
+    .latex sub,
+    .latex sup {
+        text-transform: uppercase;
     }
 
-    .logo.pencil:hover {
-        filter: drop-shadow(0 0 2em #ff3e00aa);
+    .latex sub {
+        vertical-align: -0.5ex;
+        margin-left: -0.1667em;
+        margin-right: -0.125em;
+    }
+
+    .latex,
+    .latex sub {
+        font-size: 1em;
+    }
+
+    .latex sup {
+        font-size: 0.85em;
+        vertical-align: 0.15em;
+        margin-left: -0.36em;
+        margin-right: -0.15em;
     }
 </style>
