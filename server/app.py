@@ -230,7 +230,7 @@ def get_textbooks():
     """
 
     return jsonify({
-        "sections": CLP_SECTION_REFERENCES
+        "textbooks": CLP_SECTION_REFERENCES
     })
 
 @app.route("/exam/<filename>", methods=["GET"])

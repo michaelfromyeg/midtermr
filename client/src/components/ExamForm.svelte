@@ -9,13 +9,21 @@
     let textbook = 1;
 
     let textbooks;
+    let textbookSections = {};
 
     onMount(async () => {
         try {
             const response = await fetch(`${serverUrl}/textbooks`);
             const body = await response.json();
 
-            console.log({ body });
+            textbooks = body?.textbooks;
+
+            // Initialize textbookSections object; used for checkbox values
+            Object.entries(textbooks).forEach(([clpNumber, textbookObject]) => {
+                Object.keys(textbookObject).forEach((sectionNumber) => {
+                    textbookSections[`${clpNumber}-${sectionNumber}`] = true;
+                });
+            });
         } catch (error) {
             console.error(error);
         }
@@ -43,6 +51,8 @@
             console.error(error);
         }
     }
+
+    console.log({ textbook });
 </script>
 
 <form class="exam-form">
@@ -108,6 +118,32 @@
         </label>
     </div>
 
+    <div class="exam-form-textbook-sections">
+        {#if textbooks && textbooks[textbook]}
+            {#each Object.entries(textbooks[textbook]) as [sectionNumber, sectionObject]}
+                <div class="exam-form-checkbox-entry">
+                    <input
+                        type="checkbox"
+                        id={`${textbook}-${sectionNumber}`}
+                        name={`${textbook}-${sectionNumber}`}
+                        bind:checked={textbookSections[
+                            `${textbook}-${sectionNumber}`
+                        ]}
+                    />
+                    <label for={`${textbook}-${sectionNumber}`}
+                        >{sectionNumber} ({sectionObject.topic})</label
+                    ><br />
+                </div>
+            {/each}
+        {:else if textbooks}
+            <p class="loading-message">
+                Missing section data for CLP {textbook}
+            </p>
+        {:else}
+            <p class="loading-message">Loading textbook content...</p>
+        {/if}
+    </div>
+
     <p class="exam-summary">
         Generate exam <code class="variable">{examName}</code> with seed
         <code class="variable">{seed}</code>...
@@ -156,6 +192,19 @@
         text-align: center;
     }
 
+    .exam-form-textbook-sections {
+        display: grid;
+
+        grid-gap: 0.5rem;
+        grid-template-rows: auto auto auto auto auto auto auto auto auto;
+        grid-auto-flow: column;
+
+        margin: 0 auto;
+        margin-bottom: 0.5rem;
+        max-width: 120ch;
+        text-align: left;
+    }
+
     .variable {
         background-color: yellow;
     }
@@ -167,5 +216,9 @@
     .go {
         background-color: limegreen;
         color: white;
+    }
+
+    .loading-message {
+        text-align: center;
     }
 </style>
