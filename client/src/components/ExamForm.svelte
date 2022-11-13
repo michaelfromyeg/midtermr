@@ -29,8 +29,10 @@
         }
     });
 
-    async function handleCreateExam() {
+    async function handleCreateExam(event) {
         try {
+            event.preventDefault();
+
             const response = await fetch(`${serverUrl}/exams?seed=${seed}`, {
                 method: "post",
                 headers: {
@@ -41,6 +43,8 @@
                     name: examName,
                     seed,
                     length,
+                    textbook,
+                    textbookSections,
                 }),
             });
 

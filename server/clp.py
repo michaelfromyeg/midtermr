@@ -218,3 +218,51 @@ def clp_solutions_url(clp: ClpTextbook, level: ClpAnswerLevel) -> str:
         case ClpAnswerLevel.SOLUTIONS:
             return f"{base_url}/app_soln.html"
     raise ValueError("Invalid CLP textbook based to clp_path")
+
+
+def int2clp(x: int) -> ClpTextbook:
+    if x not in [t.value for t in ClpTextbook]:
+        raise ValueError(f"CLP textbook {x} does not exist")
+    return ClpTextbook(x)
+
+
+def process_clp_sections(clp: ClpTextbook, sections: dict) -> dict:
+    def pop_clp(key: str) -> str:
+        return key[2:]
+
+    return {pop_clp(key): sections[key] for key in sections}
+
+
+def build_template(clp: ClpTextbook, sections: dict, length: int) -> dict:
+    template = {}
+
+    all_sections = [s.value for s in Clp1Sections]
+    for section_name, include in sections.items():
+        if not include or section_name not in all_sections:
+            continue
+
+        difficulties = [e.value for e in ClpExerciseDifficulty]
+        section_object = {}
+        for difficulty in difficulties:
+            section_object[difficulty] = length
+
+        template[section_name] = section_object
+    return template
+
+# TODO(michaelfromyeg): remove old templates
+LONG_EXAM_TEMPLATE = {
+    "1.6": {
+        1: 3,
+        2: 2,
+        3: 1,
+    },
+    "2.7": {1: 3, 2: 2, 3: 1},
+}
+
+SHORT_EXAM_TEMPLATE = {
+    "1.6": {
+        1: 2,
+        2: 1,
+    },
+    "2.7": {1: 2, 2: 1},
+}

@@ -26,29 +26,14 @@ from clp import (
     CLP_SECTION_REFERENCES,
     clp_images_url,
     clp_exercises_url,
+    int2clp,
+    process_clp_sections,
+    build_template,
 )
 
 # from flask_ngrok import run_with_ngrok
 
 markdown_processor = markdown.Markdown()
-
-
-LONG_EXAM_TEMPLATE = {
-    "1.6": {
-        1: 3,
-        2: 2,
-        3: 1,
-    },
-    "2.7": {1: 3, 2: 2, 3: 1},
-}
-
-SHORT_EXAM_TEMPLATE = {
-    "1.6": {
-        1: 2,
-        2: 1,
-    },
-    "2.7": {1: 2, 2: 1},
-}
 
 
 class PyObjectId(ObjectId):
@@ -188,6 +173,14 @@ def get_questions(
     soup = BeautifulSoup(r.content, "html.parser")
     exercise_groups = soup.find_all("div", class_="exercisegroup")
 
+    idx = difficulty.value - 1
+    if not (idx < len(exercise_groups) and idx >= 0):
+        print(url)
+        print(difficulty, idx)
+        for g in exercise_groups:
+            print(g.prettify())
+        return ""
+
     exercise_group = exercise_groups[difficulty.value - 1]
 
     exercises_wrapper = exercise_group.find("div", class_="exercisegroup-exercises")
@@ -223,15 +216,15 @@ def get_questions(
 
     return full_html
 
+
 @app.route("/textbooks", methods=["GET"])
 def get_textbooks():
     """
     Return textbook information and available sections.
     """
 
-    return jsonify({
-        "textbooks": CLP_SECTION_REFERENCES
-    })
+    return jsonify({"textbooks": CLP_SECTION_REFERENCES})
+
 
 @app.route("/exam/<filename>", methods=["GET"])
 def get_exam_by_filename(filename: str):
@@ -277,7 +270,11 @@ def new_exam():
     raw_exam = request.get_json()
     raw_exam["date_created"] = datetime.utcnow()
 
-    template = LONG_EXAM_TEMPLATE if raw_exam["length"] == 1 else SHORT_EXAM_TEMPLATE
+    textbook = int2clp(raw_exam["textbook"])
+    textbook_sections = process_clp_sections(textbook, raw_exam["textbookSections"])
+    length = raw_exam["length"]
+
+    template = build_template(textbook, textbook_sections, length)
 
     full_html = ""
     for section, value in template.items():
