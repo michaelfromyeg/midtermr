@@ -1,1 +1,1 @@
-export const serverUrl = "https://api.midtermr.michaeldemar.co"; // "http://localhost:8080";
+export const serverUrl = import.meta.env.PROD ? "https://api.midtermr.michaeldemar.co" : "http://localhost:8080";

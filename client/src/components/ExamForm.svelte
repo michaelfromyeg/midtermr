@@ -1,10 +1,25 @@
 <script>
+    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import { serverUrl } from "../../constants";
 
     let examName = "my-cool-exam";
     let seed = "midtermr";
     let length = 1;
+    let textbook = 1;
+
+    let textbooks;
+
+    onMount(async () => {
+        try {
+            const response = await fetch(`${serverUrl}/textbooks`);
+            const body = await response.json();
+
+            console.log({ body });
+        } catch (error) {
+            console.error(error);
+        }
+    });
 
     async function handleCreateExam() {
         try {
@@ -53,6 +68,46 @@
         </label>
     </div>
 
+    <div class="exam-form-radio-entry">
+        <b>CLP</b>
+        <label>
+            <input
+                type="radio"
+                bind:group={textbook}
+                name="textbook"
+                value={1}
+            />
+            1
+        </label>
+        <label>
+            <input
+                type="radio"
+                bind:group={textbook}
+                name="textbook"
+                value={2}
+            />
+            2
+        </label>
+        <label>
+            <input
+                type="radio"
+                bind:group={textbook}
+                name="textbook"
+                value={3}
+            />
+            3
+        </label>
+        <label>
+            <input
+                type="radio"
+                bind:group={textbook}
+                name="textbook"
+                value={4}
+            />
+            4
+        </label>
+    </div>
+
     <p class="exam-summary">
         Generate exam <code class="variable">{examName}</code> with seed
         <code class="variable">{seed}</code>...
@@ -72,7 +127,6 @@
         margin: 0 auto;
         margin-bottom: 0.5rem;
         max-width: 30ch;
-
         text-align: left;
     }
 
@@ -81,6 +135,9 @@
     }
 
     .exam-form-radio-entry {
+        margin: 0 auto;
+        margin-bottom: 0.5rem;
+        max-width: 45ch;
         text-align: center;
     }
 

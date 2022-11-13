@@ -223,6 +223,15 @@ def get_questions(
 
     return full_html
 
+@app.route("/textbooks", methods=["GET"])
+def get_textbooks():
+    """
+    Return textbook information and available sections.
+    """
+
+    return jsonify({
+        "sections": CLP_SECTION_REFERENCES
+    })
 
 @app.route("/exam/<filename>", methods=["GET"])
 def get_exam_by_filename(filename: str):
