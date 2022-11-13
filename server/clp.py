@@ -1,6 +1,15 @@
 from typing import TypedDict
 from enum import Enum
 
+CLP_BASE_URL = "https://personal.math.ubc.ca"
+
+
+class ClpTextbook(int, Enum):
+    CLP_1 = 1
+    CLP_2 = 2
+    CLP_3 = 3
+    CLP_4 = 4
+
 
 class ClpExerciseDifficulty(int, Enum):
     """
@@ -10,6 +19,12 @@ class ClpExerciseDifficulty(int, Enum):
     STAGE_1 = 1
     STAGE_2 = 2
     STAGE_3 = 3
+
+
+class ClpAnswerLevel(int, Enum):
+    HINTS = 1
+    ANSWERS = 2
+    SOLUTIONS = 3
 
 
 class Clp1Sections(str, Enum):
@@ -58,6 +73,8 @@ class Clp1Sections(str, Enum):
     OPTIMIZATION = "3.5"
     SKETCHING_GRAPHS = "3.6"
     LHOPITAL = "3.7"
+    # Chapter 4: Towards integral calculus
+    ANTIDERIVATIVES = "4.1"
 
 
 class Clp2Sections(str, Enum):
@@ -72,41 +89,132 @@ class Clp4Sections(str, Enum):
     TODO = "0"
 
 
-clpSections = [s.value for s in Clp1Sections]
-
-
 class ClpSectionInformation(TypedDict):
     topic: str
     exercise_id: int
 
 
+# TODO(michaelfromyeg): see if this actually works
 class ClpReferenece(TypedDict):
-    clpSections: ClpSectionInformation
+    Clp1Sections: ClpSectionInformation
 
 
-CLP_SECTION_REFERENCE: ClpReferenece = {
-    "1.6": {
+CLP1_SECTION_REFERENCE: ClpReferenece = {
+    Clp1Sections.DRAWING_TANGENTS: {
+        "topic": "drawing tangents; a first limit",
+        "exercise_id": 1,
+    },
+    Clp1Sections.COMPUTING_VELOCITY: {
+        "topic": "another limit; computing velocity",
+        "exercise_id": 2,
+    },
+    Clp1Sections.LIMITS: {
+        "topic": "limits of a function",
+        "exercise_id": 3,
+    },
+    Clp1Sections.LIMIT_LAWS: {"topic": "limit laws", "exercise_id": 4},
+    Clp1Sections.LIMITS_AT_INFINITY: {
+        "topic": "limits at infinity",
+        "exercise_id": 5,
+    },
+    Clp1Sections.CONTINUITY: {
         "topic": "continuity",
         "exercise_id": 6,
     },
-    "2.7": {
+    Clp1Sections.REVISITING_TANGENT_LINES: {
+        "topic": "revisiting tangent lines",
+        "exercise_id": 7,
+    },
+    Clp1Sections.DEFINITION_OF_DERIVATIVE: {
+        "topic": "definition of the derivative",
+        "exercise_id": 8,
+    },
+    Clp1Sections.INTERPRETATIONS_OF_DERIVATIVE: {
+        "topic": "interpretations of the derivative",
+        "exercise_id": 9,
+    },
+    Clp1Sections.ARITHMETIC_OF_DERIVATIVES: {
+        "topic": "arithmetic of derivatives",
+        "exercise_id": 10,
+    },
+    Clp1Sections.USING_ARITHMETIC_OF_DERIVATIVES: {
+        "topic": "using the arithmetic of derivatives",
+        "exercise_id": 11,
+    },
+    Clp1Sections.DERIVATIVES_OF_EXPONENTIALS: {
         "topic": "derivatives, exponential functions",
         "exercise_id": 12,
     },
+    Clp1Sections.DERIVATIVES_OF_TRIGONOMETRIC_FUNCTIONS: {
+        "topic": "derivatives, trigonometric functions",
+        "exercise_id": 13,
+    },
+    Clp1Sections.CHAIN_RULE: {"topic": "chain rule", "exercise_id": 14},
+    Clp1Sections.NATURAL_LOGARITHM: {
+        "topic": "natural logarithm",
+        "exercise_id": 15,
+    },
+    Clp1Sections.IMPLICIT_DIFFERENTIATION: {
+        "topic": "implicit differentiation",
+        "exercise_id": 16,
+    },
+    Clp1Sections.INVERSE_TRIGONOMETRIC_FUNCTIONS: {
+        "topic": "inverse trigonometric functions",
+        "exercise_id": 17,
+    },
+    Clp1Sections.MEAN_VALUE_THEOREM: {
+        "topic": "mean value theorem",
+        "exercise_id": 18,
+    },
+    Clp1Sections.HIGHER_ORDER_DERIVATIVES: {
+        "topic": "higher order derivatives",
+        "exercise_id": 19,
+    },
+    Clp1Sections.VELOCITY_AND_ACCELERATION: {
+        "topic": "velocity and acceleration",
+        "exercise_id": 20,
+    },
 }
 
+CLP_SECTION_REFERENCES = {ClpTextbook.CLP_1: CLP1_SECTION_REFERENCE}
 
-def clp_images_url(relative_path: str) -> str:
+
+def clp_path(clp: ClpTextbook) -> str:
+    base_path = f"~CLP/CLP{clp.value}"
+    match clp:
+        case ClpTextbook.CLP_1:
+            return f"{base_path}/clp_1_dc"
+        case ClpTextbook.CLP_2:
+            return f"{base_path}/clp_2_ic"
+        case ClpTextbook.CLP_3:
+            return f"{base_path}/clp_3_mc"
+        case ClpTextbook.CLP_4:
+            return f"{base_path}/clp_4_vc"
+    raise ValueError("Invalid CLP textbook based to clp_path")
+
+
+def clp_images_url(clp: ClpTextbook, relative_path: str) -> str:
     """
     Generator for CLP image links.
     """
-    return f"https://personal.math.ubc.ca/~CLP/CLP1/clp_1_dc/{relative_path}"
+
+    return f"{CLP_BASE_URL}/{clp_path(clp)}/{relative_path}"
 
 
-def clp_exercises_url(exercise_id: int) -> str:
+def clp_exercises_url(clp: ClpTextbook, exercise_id: int) -> str:
     """
     Generator for CLP exercise links.
     """
-    return (
-        f"https://personal.math.ubc.ca/~CLP/CLP1/clp_1_dc/exercises-{exercise_id}.html"
-    )
+    return f"{CLP_BASE_URL}/{clp_path(clp)}/exercises-{exercise_id}.html"
+
+
+def clp_solutions_url(clp: ClpTextbook, level: ClpAnswerLevel) -> str:
+    base_url = f"{CLP_BASE_URL}/{clp_path(clp)}"
+    match level:
+        case ClpAnswerLevel.HINTS:
+            return f"{base_url}/app_hint.html"
+        case ClpAnswerLevel.ANSWERS:
+            return f"{base_url}/app_answ.html"
+        case ClpAnswerLevel.SOLUTIONS:
+            return f"{base_url}/app_soln.html"
+    raise ValueError("Invalid CLP textbook based to clp_path")

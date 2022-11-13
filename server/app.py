@@ -20,9 +20,10 @@ from pydantic import BaseModel, Field
 from bs4 import BeautifulSoup
 from weasyprint import HTML
 from clp import (
+    ClpTextbook,
     Clp1Sections,
     ClpExerciseDifficulty,
-    CLP_SECTION_REFERENCE,
+    CLP_SECTION_REFERENCES,
     clp_images_url,
     clp_exercises_url,
 )
@@ -176,8 +177,10 @@ def get_questions(
     """
     random.seed(seed)
 
+    clp = ClpTextbook.CLP_1
     url = clp_exercises_url(
-        exercise_id=CLP_SECTION_REFERENCE[section.value]["exercise_id"]
+        clp=clp,
+        exercise_id=CLP_SECTION_REFERENCES[clp][section]["exercise_id"],
     )
 
     r = requests.get(url)
@@ -211,7 +214,9 @@ def get_questions(
             html += f"<p>{math_md}</p>\n"
 
         for i, image in enumerate(images):
-            image_url = clp_images_url(relative_path=image["src"])
+            image_url = clp_images_url(
+                clp=ClpTextbook.CLP_1, relative_path=image["src"]
+            )
             html += f'<img style="display: block; margin: auto; margin-top: 2rem;" src={image_url} alt="image-{i}" />\n'
 
         full_html += html
@@ -271,7 +276,7 @@ def new_exam():
         for difficulty, n in value.items():
             full_html += f"<h3>Difficulty {difficulty}</h3>"
             question_html = get_questions(
-                TextbookSection(section), ExerciseDifficulty(difficulty), n, seed
+                Clp1Sections(section), ClpExerciseDifficulty(difficulty), n, seed
             )
             full_html += question_html
 
