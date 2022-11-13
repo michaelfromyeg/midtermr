@@ -24,6 +24,6 @@
 <style>
     .navlink {
         display: inline-block;
-        margin-left: 50px;
+        margin-left: 0.5rem;
     }
 </style>

@@ -19,7 +19,7 @@
 
         display: inline-block;
         width: 24px;
-        margin-right: 10px;
+        margin-right: 0.2rem;
     }
 
     .logo-text {

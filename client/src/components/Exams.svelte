@@ -80,7 +80,7 @@
     }
 
     td {
-        padding: 0 30px;
+        padding: 0 0.2rem;
     }
 
     th {
