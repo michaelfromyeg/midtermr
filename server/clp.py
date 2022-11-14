@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, List
 from enum import Enum
 
 CLP_BASE_URL = "https://personal.math.ubc.ca"
@@ -92,6 +92,7 @@ class Clp4Sections(str, Enum):
 class ClpSectionInformation(TypedDict):
     topic: str
     exercise_id: int
+    stages: List[ClpExerciseDifficulty]
 
 
 # TODO(michaelfromyeg): see if this actually works
@@ -103,77 +104,189 @@ CLP1_SECTION_REFERENCE: ClpReferenece = {
     Clp1Sections.DRAWING_TANGENTS: {
         "topic": "drawing tangents; a first limit",
         "exercise_id": 1,
+        "stages": [ClpExerciseDifficulty.STAGE_1],
     },
     Clp1Sections.COMPUTING_VELOCITY: {
         "topic": "another limit; computing velocity",
         "exercise_id": 2,
+        "stages": [ClpExerciseDifficulty.STAGE_1, ClpExerciseDifficulty.STAGE_2],
     },
     Clp1Sections.LIMITS: {
         "topic": "limits of a function",
         "exercise_id": 3,
+        "stages": [ClpExerciseDifficulty.STAGE_1, ClpExerciseDifficulty.STAGE_2],
     },
-    Clp1Sections.LIMIT_LAWS: {"topic": "limit laws", "exercise_id": 4},
+    Clp1Sections.LIMIT_LAWS: {
+        "topic": "limit laws",
+        "exercise_id": 4,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
+    },
     Clp1Sections.LIMITS_AT_INFINITY: {
         "topic": "limits at infinity",
         "exercise_id": 5,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.CONTINUITY: {
         "topic": "continuity",
         "exercise_id": 6,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.REVISITING_TANGENT_LINES: {
         "topic": "revisiting tangent lines",
         "exercise_id": 7,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+        ],
     },
     Clp1Sections.DEFINITION_OF_DERIVATIVE: {
         "topic": "definition of the derivative",
         "exercise_id": 8,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.INTERPRETATIONS_OF_DERIVATIVE: {
         "topic": "interpretations of the derivative",
         "exercise_id": 9,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.ARITHMETIC_OF_DERIVATIVES: {
         "topic": "arithmetic of derivatives",
         "exercise_id": 10,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.USING_ARITHMETIC_OF_DERIVATIVES: {
         "topic": "using the arithmetic of derivatives",
         "exercise_id": 11,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.DERIVATIVES_OF_EXPONENTIALS: {
         "topic": "derivatives, exponential functions",
         "exercise_id": 12,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.DERIVATIVES_OF_TRIGONOMETRIC_FUNCTIONS: {
         "topic": "derivatives, trigonometric functions",
         "exercise_id": 13,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
-    Clp1Sections.CHAIN_RULE: {"topic": "chain rule", "exercise_id": 14},
+    Clp1Sections.CHAIN_RULE: {
+        "topic": "chain rule",
+        "exercise_id": 14,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
+    },
     Clp1Sections.NATURAL_LOGARITHM: {
         "topic": "natural logarithm",
         "exercise_id": 15,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.IMPLICIT_DIFFERENTIATION: {
         "topic": "implicit differentiation",
         "exercise_id": 16,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.INVERSE_TRIGONOMETRIC_FUNCTIONS: {
         "topic": "inverse trigonometric functions",
         "exercise_id": 17,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.MEAN_VALUE_THEOREM: {
         "topic": "mean value theorem",
         "exercise_id": 18,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.HIGHER_ORDER_DERIVATIVES: {
         "topic": "higher order derivatives",
         "exercise_id": 19,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
     Clp1Sections.VELOCITY_AND_ACCELERATION: {
         "topic": "velocity and acceleration",
         "exercise_id": 20,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
     },
+    Clp1Sections.RELATED_RATES: {
+        "topic": "related rates",
+        "exercise_id": 21,
+        "stages": [
+            ClpExerciseDifficulty.STAGE_1,
+            ClpExerciseDifficulty.STAGE_2,
+            ClpExerciseDifficulty.STAGE_3,
+        ],
+    },
+    # TODO(michaelfromyeg): add subsection support
+    # From this section and below, we have a distinct subsection with problems broken up by individual sections of the chapter
+    # Clp1Sections.EXPONENTIAL_GROWTH_AND_DECAY: {
+    #     "topic": "exponential growth and decay",
+    #     "subsection_id": 47,
+    #     "stages": [
+    #         ClpExerciseDifficulty.STAGE_1,
+    #         ClpExerciseDifficulty.STAGE_2,
+    #         ClpExerciseDifficulty.STAGE_3,
+    #     ],
+    # },
 }
 
 CLP_SECTION_REFERENCES = {ClpTextbook.CLP_1: CLP1_SECTION_REFERENCE}
@@ -247,7 +360,11 @@ def build_template(clp: ClpTextbook, sections: dict, length: int) -> dict:
             section_object[difficulty] = length
 
         template[section_name] = section_object
+
+    print(template)
+
     return template
+
 
 # TODO(michaelfromyeg): remove old templates
 LONG_EXAM_TEMPLATE = {

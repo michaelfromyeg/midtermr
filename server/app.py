@@ -275,6 +275,7 @@ def new_exam():
     length = raw_exam["length"]
 
     template = build_template(textbook, textbook_sections, length)
+    print(template)
 
     full_html = ""
     for section, value in template.items():
@@ -291,10 +292,10 @@ def new_exam():
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, f"tmp/midtermr-{seed}.pdf")
 
-    if not os.path.exists(filename):
-        html = render_template("exam.html", exam=question_html)
-        # TODO: write pre-processor to convert math sections into images
-        HTML(string=html).write_pdf(filename)
+    # TODO: write pre-processor to convert math sections into images
+    # if not os.path.exists(filename):
+    #     html = render_template("exam.html", exam=question_html)
+    #     HTML(string=html).write_pdf(filename)
 
     exam = Exam(**raw_exam)
     inserted_exam = db.exams.insert_one(exam.dict())
